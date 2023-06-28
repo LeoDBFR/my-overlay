@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+  <maintainer type="person">
+    <email>leodomecbialek@outlook.fr</email>
+    <name>Léo Domec--Bialek</name>
+  </maintainer>
+  <longdescription lang="en">
+	Isiders Version of VSCode
+  </longdescription>
+  <upstream>
+    <remote-id type="github">microsoft/vscode</remote-id>
+    <bugs-to>https://github.com/microsoft/vscode/issues</bugs-to>
+  </upstream>
+</pkgmetadata>

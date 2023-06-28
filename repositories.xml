@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<repositories version="1.0">
+  <repo quality="experimental" status="unofficial">
+    <name>my-overlay</name>
+      <description lang="en">LeoDB's Custom Gentoo Overlay.</description>
+        <homepage>https://github.com/LeoDBFR/my-overlay</homepage>
+        <owner type="person">
+            <name>Léo Domec--Bialek</name>
+            <email>leodomecbialek@outlook.fr</email>
+        </owner>
+        <source type="git">git://github.com/LeoDBFR/my-overlay.git</source>
+        <feed>https://github.com/LeoDBFR/my-overlay/commits/master.atom</feed>
+  </repo>
+</repositories>
