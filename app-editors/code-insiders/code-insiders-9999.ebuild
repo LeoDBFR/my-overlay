@@ -1,61 +1,120 @@
-# Copyright 1999-2020 Gentoo Foundation
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-inherit eutils pax-utils desktop
+inherit desktop pax-utils xdg optfeature
 
 DESCRIPTION="Multiplatform Visual Studio Code from Microsoft"
 HOMEPAGE="https://code.visualstudio.com"
-BASE_URI="https://vscode-update.azurewebsites.net/latest"
 SRC_URI="
-	x86? ( ${BASE_URI}/linux-ia32/insider ->  ${P}_x86.tar.gz )
-	amd64? ( ${BASE_URI}/linux-x64/insider -> ${P}_amd64.tar.gz )
-	"
-RESTRICT="mirror strip"
-
-LICENSE="EULA MIT"
-SLOT="0"
-KEYWORDS="~x86 ~amd64"
-IUSE=""
-
-DEPEND="
-	sys-apps/yarn
-	net-libs/nodejs[npm]
-	media-libs/libpng
-	x11-libs/gtk+
-	x11-libs/cairo
-	x11-libs/libXtst
+	amd64? ( https://update.code.visualstudio.com/latest/linux-x64/insider -> ${P}-amd64.tar.gz )
 "
+S="${WORKDIR}"
+
+RESTRICT="mirror strip bindist"
+
+LICENSE="
+	Apache-2.0
+	BSD
+	BSD-1
+	BSD-2
+	BSD-4
+	CC-BY-4.0
+	ISC
+	LGPL-2.1+
+	Microsoft-vscode
+	MIT
+	MPL-2.0
+	openssl
+	PYTHON
+	TextMate-bundle
+	Unlicense
+	UoI-NCSA
+	W3C
+"
+SLOT="0"
+KEYWORDS="-* ~amd64 ~arm ~arm64"
 
 RDEPEND="
-	${DEPEND}
-	net-print/cups
-	x11-libs/libnotify
-	x11-libs/libXScrnSaver
+	>=app-accessibility/at-spi2-core-2.46.0:2
 	app-crypt/libsecret[crypt]
+	dev-libs/expat
+	dev-libs/glib:2
+	dev-libs/nspr
+	dev-libs/nss
+	media-libs/alsa-lib
+	media-libs/mesa
+	net-print/cups
+	sys-apps/util-linux
+	sys-apps/dbus
+	x11-libs/cairo
+	x11-libs/gdk-pixbuf:2
+	x11-libs/gtk+:3
+	x11-libs/libdrm
+	x11-libs/libX11
+	x11-libs/libxcb
+	x11-libs/libXcomposite
+	x11-libs/libXdamage
+	x11-libs/libXext
+	x11-libs/libXfixes
+	x11-libs/libxkbcommon
+	x11-libs/libxkbfile
+	x11-libs/libXrandr
+	x11-libs/libxshmfence
+	x11-libs/pango
 "
 
-QA_PRESTRIPPED="opt/${PN}/code"
+QA_PREBUILT="
+	/opt/vscode/bin/code-tunnel
+	/opt/vscode/chrome_crashpad_handler
+	/opt/vscode/chrome-sandbox
+	/opt/vscode/code
+	/opt/vscode/libEGL.so
+	/opt/vscode/libffmpeg.so
+	/opt/vscode/libGLESv2.so
+	/opt/vscode/libvk_swiftshader.so
+	/opt/vscode/libvulkan.so*
+	/opt/vscode/resources/app/extensions/*
+	/opt/vscode/resources/app/node_modules.asar.unpacked/*
+	/opt/vscode/swiftshader/libEGL.so
+	/opt/vscode/swiftshader/libGLESv2.so
+"
 
-pkg_setup(){
-	use amd64 && S="${WORKDIR}/VSCode-linux-x64" || S="${WORKDIR}/VSCode-linux-ia32"
-}
+src_install() {
+	if use amd64; then
+		cd "${WORKDIR}/VSCode-linux-x64" || die
+	elif use arm; then
+		cd "${WORKDIR}/VSCode-linux-armhf" || die
+	elif use arm64; then
+		cd "${WORKDIR}/VSCode-linux-arm64" || die
+	else
+		die "Visual Studio Code only supports amd64, arm and arm64"
+	fi
 
-src_install(){
+	# Cleanup
+	rm -r ./resources/app/ThirdPartyNotices.txt || die
+
+	# Disable update server
+	sed -e "/updateUrl/d" -i ./resources/app/product.json || die
+
+	# Install
 	pax-mark m code
-	insinto "/opt/${PN}"
-	doins -r *
-	dosym "/opt/${PN}/bin/code-insiders" "/usr/bin/${PN}"
-	make_desktop_entry "${PN}" "Visual Studio Code" "${PN}" "Development;IDE"
-	doicon ${FILESDIR}/${PN}.png
-	fperms +x "/opt/${PN}/code-insiders"
-	fperms +x "/opt/${PN}/bin/code-insiders"
-	insinto "/usr/share/licenses/${PN}"
-	doins "resources/app/LICENSE.rtf"
+	mkdir -p "${ED}/opt/${PN}" || die
+	cp -r . "${ED}/opt/${PN}" || die
+	fperms 4711 /opt/${PN}/chrome-sandbox
+
+	dosym -r "/opt/${PN}/bin/code" "usr/bin/vscode"
+	dosym -r "/opt/${PN}/bin/code" "usr/bin/code"
+	dosym -r "/opt/${PN}/bin/code-tunnel" "usr/bin/code-tunnel"
+	domenu "${FILESDIR}/vscode.desktop"
+	domenu "${FILESDIR}/vscode-url-handler.desktop"
+	domenu "${FILESDIR}/vscode-wayland.desktop"
+	domenu "${FILESDIR}/vscode-url-handler-wayland.desktop"
+	newicon "resources/app/resources/linux/code.png" "vscode.png"
 }
 
-pkg_postinst(){
-	elog "You may install some additional utils, so check them in:"
-	elog "https://code.visualstudio.com/Docs/setup#_additional-tools"
+pkg_postinst() {
+	xdg_pkg_postinst
+	optfeature "keyring support inside vscode" "gnome-base/gnome-keyring"
 }
