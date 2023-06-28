@@ -66,10 +66,10 @@ RDEPEND="
 "
 
 QA_PREBUILT="
-	/opt/vscode/bin/code-tunnel
+	/opt/vscode/bin/code-tunnel-insiders
 	/opt/vscode/chrome_crashpad_handler
 	/opt/vscode/chrome-sandbox
-	/opt/vscode/code
+	/opt/vscode/code-insiders
 	/opt/vscode/libEGL.so
 	/opt/vscode/libffmpeg.so
 	/opt/vscode/libGLESv2.so
@@ -104,9 +104,9 @@ src_install() {
 	cp -r . "${ED}/opt/${PN}" || die
 	fperms 4711 /opt/${PN}/chrome-sandbox
 
-	dosym -r "/opt/${PN}/bin/code" "usr/bin/vscode"
-	dosym -r "/opt/${PN}/bin/code" "usr/bin/code"
-	dosym -r "/opt/${PN}/bin/code-tunnel" "usr/bin/code-tunnel"
+	dosym -r "/opt/${PN}/bin/code-insiders" "usr/bin/vscode"
+	dosym -r "/opt/${PN}/bin/code-insiders" "usr/bin/code"
+	dosym -r "/opt/${PN}/bin/code-tunnel-insiders" "usr/bin/code-tunnel"
 	domenu "${FILESDIR}/vscode.desktop"
 	domenu "${FILESDIR}/vscode-url-handler.desktop"
 	domenu "${FILESDIR}/vscode-wayland.desktop"
