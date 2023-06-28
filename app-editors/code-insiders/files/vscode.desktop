@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=VSCode
+Name=VSCode Insiders
 Comment=Editing evolved
 GenericName=Code Editor
 Exec=/usr/bin/vscode --unity-launch %F

@@ -5,7 +5,7 @@ EAPI=8
 
 inherit desktop pax-utils xdg optfeature
 
-DESCRIPTION="Multiplatform Visual Studio Code from Microsoft"
+DESCRIPTION="Multiplatform Visual Studio Code Insiders from Microsoft"
 HOMEPAGE="https://code.visualstudio.com"
 SRC_URI="
 	amd64? ( https://update.code.visualstudio.com/latest/linux-x64/insider -> ${P}-amd64.tar.gz )
